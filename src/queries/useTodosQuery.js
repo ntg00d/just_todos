@@ -1,21 +1,14 @@
 import {useQuery} from '@tanstack/react-query'
-import {useDebounce} from '../hooks'
-import {todos} from '../store/todos'
 
-export const useTodosQuery = (value) => {
-    const debounced = useDebounce(value, 100)
-
+export const useTodosQuery = (params) => {
     return useQuery(
-        ["useFetchTodosQuery", {
-            store: todos,
-            searchValue: debounced
-        }],
+        ["useFetchTodosQuery", params],
         async () => {
             try {
                 const response = await new Promise(resolve => {
                     setTimeout(() => {
-                        resolve(todos.filter(todo => (
-                            todo.text.toLowerCase().includes(debounced.toLowerCase())
+                        resolve(params.todos.filter(todo => (
+                            todo.text.toLowerCase().includes(params.debounced.toLowerCase())
                         )))
                     }, 2000)
                 })
