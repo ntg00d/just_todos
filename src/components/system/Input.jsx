@@ -1,18 +1,16 @@
-import {memo} from 'react'
+import { memo } from "react";
 
-export default memo(({
-    classes = '',
-    placeholder,
-    value,
-    onChange,
-    readOnly
-}) => {
-    return <input
-        type='text'
-        className={`border border-solid border-indigo-600 ${classes}`}
+export default memo(
+  ({ className = "", placeholder, value, onChange, readOnly }) => {
+    return (
+      <input
+        type="text"
+        className={`${className} border border-solid border-indigo-600`}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
         readOnly={readOnly}
-    />
-})
+      />
+    );
+  }
+);
