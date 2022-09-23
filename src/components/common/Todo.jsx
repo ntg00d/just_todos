@@ -26,6 +26,8 @@ export default memo(({ todo, onChange, onRemove }) => {
           title={todo.liked ? "Unlike" : "Like"}
           onClick={() => {
             useTodosStore.setState((prevState) => {
+              console.log(todo.id);
+
               return {
                 todos: prevState.todos.map((prevTodo) =>
                   prevTodo.id === todo.id
@@ -33,7 +35,6 @@ export default memo(({ todo, onChange, onRemove }) => {
                     : todo
                 ),
               };
-              console.log(todo.id);
             });
           }}
         />
