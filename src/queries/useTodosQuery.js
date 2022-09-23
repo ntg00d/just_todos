@@ -1,17 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
+import { useDebounce } from "../hooks";
+import { todos } from "../store/todos";
 
 export const useTodosQuery = (params) => {
+  const debounced = useDebounce(params.search, 100);
+
+  const queryParams = {
+    ...params,
+    search: debounced,
+  };
+
+  const todoList = todos.filter((todo) =>
+    todo.text.toLowerCase().includes(queryParams.search.toLowerCase())
+  ); // Не обновляет с новым массивом
+
   return useQuery(
-    ["useFetchTodosQuery", params],
+    ["useFetchTodosQuery", queryParams],
     async () => {
       try {
         const response = await new Promise((resolve) => {
           setTimeout(() => {
-            resolve(
-              params.todos.filter((todo) =>
-                todo.text.toLowerCase().includes(params.debounced.toLowerCase())
-              )
-            );
+            resolve(todos);
           }, 2000);
         });
         return response;

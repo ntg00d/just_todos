@@ -3,21 +3,17 @@ import Likes from "./components/common/Likes";
 import Todo from "./components/common/Todo";
 import Button from "./components/system/Button";
 import Input from "./components/system/Input";
-import { useDebounce } from "./hooks";
 import { useAddTodoMutation } from "./queries/useAddTodoMutation";
 import { useRemoveTodoMutation } from "./queries/useRemoveTodoMutation";
 import { useTodosQuery } from "./queries/useTodosQuery";
 import { useUpdateTodoMutation } from "./queries/useUpdateTodoMutation";
-import useTodosStore from "./store/todos";
+// Не подсказывает импорты
 
 export default memo(() => {
   const [newTodoText, setNewTodoText] = useState("");
   const [searchTodo, setSearchTodo] = useState("");
-  const debounced = useDebounce(searchTodo, 100);
 
-  const todos = useTodosStore((state) => state.todos);
-
-  const todosQuery = useTodosQuery({ todos, debounced });
+  const todosQuery = useTodosQuery({ search: searchTodo });
   const addTodoMutation = useAddTodoMutation();
   const updateTodoMutation = useUpdateTodoMutation();
   const removeTodoMutation = useRemoveTodoMutation();
@@ -26,9 +22,9 @@ export default memo(() => {
     <div className="flex justify-center mt-20">
       <div className="flex flex-col items-center mx-5">
         <div className="w-80 my-4">
-          <div className="w-full flex my-3">
+          <div className="w-full flex my-3 border border-gray-200 rounded-lg shadow-xl overflow-hidden">
             <Input
-              className="w-full h-10 px-3"
+              className="w-full h-10 px-3 border-none"
               placeholder="Add todo"
               value={newTodoText}
               onChange={(e) => setNewTodoText(e.target.value)}
@@ -36,7 +32,7 @@ export default memo(() => {
             />
             <Button
               title="+"
-              className="!text-2xl !px-3.5 text-white border !border-indigo-600 !bg-indigo-600"
+              className="!text-2xl !px-3.5 !py-0 border-indigo-600"
               onClick={() => {
                 if (!newTodoText.length) return;
                 addTodoMutation.mutate(newTodoText);
@@ -45,9 +41,9 @@ export default memo(() => {
             />
           </div>
 
-          <div className="w-full my-3">
+          <div className="w-full my-3 border border-gray-200 rounded-lg shadow-xl overflow-hidden">
             <Input
-              className="w-full h-10 px-3"
+              className="w-full h-10 px-3 border-none"
               placeholder="Search todo"
               value={searchTodo}
               onChange={(e) => setSearchTodo(e.target.value)}

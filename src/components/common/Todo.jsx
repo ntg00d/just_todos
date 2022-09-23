@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import useTodosStore from "../../store/todos";
+import { useLikesStore } from "../../store/likes";
 import Button from "../system/Button";
 import Input from "../system/Input";
 
@@ -11,8 +11,11 @@ export default memo(({ todo, onChange, onRemove }) => {
     setAreaMode(!areaMode);
   };
 
+  const likedTodos = useLikesStore((state) => state.likedTodos);
+  const foundLikedTodo = likedTodos.findIndex((t) => t.id === todo.id);
+
   return (
-    <div className="w-80 h-12 my-4 px-2 flex justify-between items-center border border-gray-500 bg-slate-200">
+    <div className="w-96 h-16 my-4 px-2 py-9 flex justify-between items-center border border-gray-200 rounded-lg shadow-xl">
       <Input
         className="px-1 read-only:outline-none read-only:bg-transparent read-only:border-none"
         placeholder="Enter title"
@@ -21,20 +24,19 @@ export default memo(({ todo, onChange, onRemove }) => {
         readOnly={areaMode}
       />
 
-      <div className="flex">
+      <div className="flex rounded-lg border border-indigo-800 overflow-hidden">
         <Button
-          title={todo.liked ? "Unlike" : "Like"}
+          title="Like"
           onClick={() => {
-            useTodosStore.setState((prevState) => {
-              console.log(todo.id);
-
-              return {
-                todos: prevState.todos.map((prevTodo) =>
-                  prevTodo.id === todo.id
-                    ? { ...prevTodo, liked: !prevTodo.liked }
-                    : todo
-                ),
-              };
+            useLikesStore.setState((prevState) => {
+              if (foundLikedTodo > -1) {
+                prevState.likedTodos.splice(foundLikedTodo, 1);
+                return { likedTodos: [...prevState.likedTodos] };
+              } else {
+                return {
+                  likedTodos: [...prevState.likedTodos, todo],
+                };
+              }
             });
           }}
         />
@@ -52,12 +54,7 @@ export default memo(({ todo, onChange, onRemove }) => {
             />
           )}
 
-          <button
-            className="text-xs px-1 border border-gray-500 bg-gray-100"
-            onClick={() => onRemove(todo.id)}
-          >
-            Remove
-          </button>
+          <Button title="Remove" onClick={() => onRemove(todo.id)} />
         </div>
       </div>
     </div>

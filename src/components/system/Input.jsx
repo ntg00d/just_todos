@@ -5,7 +5,7 @@ export default memo(
     return (
       <input
         type="text"
-        className={`${className} border border-solid border-indigo-600`}
+        className={`${className} border border-solid border-indigo-600 outline-none`}
         placeholder={placeholder}
         value={value}
         onChange={onChange}

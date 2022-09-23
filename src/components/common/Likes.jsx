@@ -1,10 +1,8 @@
 import React, { memo } from "react";
-import useTodosStore from "../../store/todos";
+import { useLikesStore } from "../../store/likes";
 
 export default memo(() => {
-  const likedTodos = useTodosStore((state) =>
-    state.todos.filter((todo) => todo.liked)
-  );
+  const likedTodos = useLikesStore((state) => state.likedTodos);
 
   return (
     <div>

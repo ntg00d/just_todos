@@ -1,7 +1,5 @@
-import create from 'zustand'
+import create from "zustand";
 
-const useLikesStore = create(() => ({
-    likedTodoIds: []
-}))
-
-export default useLikesStore
+export const useLikesStore = create(() => ({
+  likedTodos: [],
+}));
