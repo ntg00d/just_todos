@@ -19,7 +19,7 @@ export default memo(() => {
   const removeTodoMutation = useRemoveTodoMutation();
 
   return (
-    <div className="flex justify-center mt-20">
+    <div className="flex justify-center mt-20 relative">
       <div className="flex flex-col items-center mx-5">
         <div className="w-80 my-4">
           <div className="w-full flex my-3 border border-gray-200 rounded-lg shadow-xl overflow-hidden">
