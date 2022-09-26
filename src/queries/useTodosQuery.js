@@ -1,40 +1,22 @@
-import { useQuery } from "@tanstack/react-query";
-import { useDebounce } from "../hooks";
-import { todos } from "../store/todos";
+import { useEffect } from "react";
+import { useBaseQuery } from "./useBaseQuery";
 
-export const useTodosQuery = (params) => {
-  const debounced = useDebounce(params.search, 100);
+export const useTodosQuery = () => {
+  const url = "https://63320557a54a0e83d24ac4e5.mockapi.io/todos";
+  const { data, isLoading, isError, fetchData } = useBaseQuery();
 
-  const queryParams = {
-    ...params,
-    search: debounced,
-  };
+  useEffect(() => {
+    fetchData(url);
+  }, [fetchData]);
 
-  const todoList = todos.filter((todo) =>
-    todo.text.toLowerCase().includes(queryParams.search.toLowerCase())
-  ); // Не обновляет с новым массивом
-
-  return useQuery(
-    ["useFetchTodosQuery", queryParams],
-    async () => {
-      try {
-        const response = await new Promise((resolve) => {
-          setTimeout(() => {
-            resolve(todos);
-          }, 2000);
-        });
-        return response;
-      } catch (error) {
-        console.log(error);
-        return [];
-      }
+  return {
+    data,
+    isLoading,
+    isError,
+    refetchData: () => {
+      fetchData(url);
+      console.log("refetchData");
     },
-    {
-      slateTime: 999999,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      refetchOnReconnect: false,
-      refetchInterval: false,
-    }
-  );
+    url,
+  };
 };

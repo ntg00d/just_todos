@@ -1,15 +1,17 @@
-import { useMutation } from "@tanstack/react-query";
-import { todos } from "../store/todos";
+import { useTodosQuery } from "./useTodosQuery";
 
 export const useAddTodoMutation = () => {
-  return useMutation(async (newTodoText) => {
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        const id = (Math.random() * 999999).toFixed();
+  const { refetchData, url } = useTodosQuery();
 
-        todos.push({ id, text: newTodoText });
-        resolve(todos);
-      }, 150);
+  return async (newTodoText) => {
+    await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json;charset=utf-8",
+      },
+      body: JSON.stringify({ text: newTodoText }),
     });
-  });
+
+    refetchData();
+  };
 };

@@ -4,19 +4,19 @@ import Todo from "./components/common/Todo";
 import Button from "./components/system/Button";
 import Input from "./components/system/Input";
 import { useAddTodoMutation } from "./queries/useAddTodoMutation";
-import { useRemoveTodoMutation } from "./queries/useRemoveTodoMutation";
 import { useTodosQuery } from "./queries/useTodosQuery";
-import { useUpdateTodoMutation } from "./queries/useUpdateTodoMutation";
-// Не подсказывает импорты
 
 export default memo(() => {
   const [newTodoText, setNewTodoText] = useState("");
   const [searchTodo, setSearchTodo] = useState("");
 
-  const todosQuery = useTodosQuery({ search: searchTodo });
+  const todosQuery = useTodosQuery();
   const addTodoMutation = useAddTodoMutation();
-  const updateTodoMutation = useUpdateTodoMutation();
-  const removeTodoMutation = useRemoveTodoMutation();
+
+  // Поставить react-icons
+  // Сделать автофокус инпутов
+  // Сделать одинаковый размер инпутов и todo
+  // Убрать тени
 
   return (
     <div className="flex justify-center mt-20 relative">
@@ -35,7 +35,7 @@ export default memo(() => {
               className="!text-2xl !px-3.5 !py-0 border-indigo-600"
               onClick={() => {
                 if (!newTodoText.length) return;
-                addTodoMutation.mutate(newTodoText);
+                addTodoMutation(newTodoText);
                 setNewTodoText("");
               }}
             />
@@ -61,10 +61,10 @@ export default memo(() => {
                 key={todo.id}
                 todo={todo}
                 onChange={(id, newText) => {
-                  updateTodoMutation.mutate({ id, newText });
+                  // updateTodoMutation.mutate({ id, newText });
                 }}
                 onRemove={(id) => {
-                  removeTodoMutation.mutate(id);
+                  // removeTodoMutation.mutate(id);
                 }}
               />
             ))}
