@@ -1,9 +1,9 @@
 import { memo, useState } from "react";
+import { api } from "./api";
 import Likes from "./components/common/Likes";
 import Todo from "./components/common/Todo";
 import Button from "./components/system/Button";
 import Input from "./components/system/Input";
-import { useDataMutation } from "./queries/useDataMutation";
 import { useDataQuery } from "./queries/useDataQuery";
 
 export default memo(() => {
@@ -12,7 +12,6 @@ export default memo(() => {
 
   const todosUrl = "https://63320557a54a0e83d24ac4e5.mockapi.io/todos";
   const todosQuery = useDataQuery(todosUrl);
-  const todosMutation = useDataMutation();
 
   return (
     <div className="flex justify-center mt-20 relative">
@@ -30,9 +29,9 @@ export default memo(() => {
             <Button
               title="+"
               className="!text-2xl !px-3.5 !py-0 border-indigo-600"
-              onClick={() => {
+              onClick={async () => {
                 if (!newTodoText.length) return;
-                todosMutation("POST", todosUrl, { text: newTodoText });
+                await api.post(todosUrl, { text: newTodoText });
                 todosQuery.refetch();
                 setNewTodoText("");
               }}
@@ -53,17 +52,19 @@ export default memo(() => {
         {todosQuery.isLoading && <span>Loading...</span>}
 
         {!todosQuery.isLoading && (
-          <div className="todos">
+          <div>
             {(todosQuery?.data || []).map((todo) => (
               <Todo
                 key={todo.id}
                 todo={todo}
-                onChange={(id, newText) => {
-                  todosMutation("PUT", `${todosUrl}/${id}`, { text: newText });
+                onChange={async (id, newText) => {
+                  await api.put(`${todosUrl}/${id}`, {
+                    text: newText,
+                  });
                   todosQuery.refetch();
                 }}
-                onRemove={(id) => {
-                  todosMutation("DELETE", `${todosUrl}/${id}`);
+                onRemove={async (id) => {
+                  await api.delete(`${todosUrl}/${id}`);
                   todosQuery.refetch();
                 }}
               />

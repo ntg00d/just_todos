@@ -5,7 +5,7 @@ export default memo(() => {
   const likedTodos = useLikesStore((state) => state.likedTodos);
 
   return (
-    <div className="absolute right-[33%]">
+    <div>
       <p className="text-xl mt-6">Liked todos:</p>
 
       {likedTodos.length ? (

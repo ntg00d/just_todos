@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { api } from "../api";
 
 export const useDataQuery = (url, params) => {
   const [data, setData] = useState();
@@ -7,20 +8,21 @@ export const useDataQuery = (url, params) => {
 
   // const debounced = useDebounce(params.search, 200);
 
-  // const queryParams = {
-  //   ...params,
-  //   search: debounced,
-  // };
+  // const queryParams = useCallback(() => {
+  //   return {
+  //     ...params,
+  //     search: debounced,
+  //   };
+  // }, [params, debounced]);
 
-  const refetch = useCallback(() => {
+  const refetch = useCallback(async () => {
     setIsError(undefined);
     setIsLoading(true);
+
     try {
-      setTimeout(async () => {
-        const response = await fetch(url);
-        setData(await response.json());
-        setIsLoading(false);
-      }, 1500); // Нюанс с беком
+      const response = await api.get(url);
+      setData(await response.json());
+      setIsLoading(false);
     } catch (err) {
       console.log(err);
 
