@@ -3,29 +3,26 @@ import Likes from "./components/common/Likes";
 import Todo from "./components/common/Todo";
 import Button from "./components/system/Button";
 import Input from "./components/system/Input";
-import { useAddTodoMutation } from "./queries/useAddTodoMutation";
-import { useTodosQuery } from "./queries/useTodosQuery";
+import { useDataMutation } from "./queries/useDataMutation";
+import { useDataQuery } from "./queries/useDataQuery";
 
 export default memo(() => {
   const [newTodoText, setNewTodoText] = useState("");
   const [searchTodo, setSearchTodo] = useState("");
 
-  const todosQuery = useTodosQuery();
-  const addTodoMutation = useAddTodoMutation();
-
-  // Поставить react-icons
-  // Сделать автофокус инпутов
-  // Сделать одинаковый размер инпутов и todo
-  // Убрать тени
+  const todosUrl = "https://63320557a54a0e83d24ac4e5.mockapi.io/todos";
+  const todosQuery = useDataQuery(todosUrl);
+  const todosMutation = useDataMutation();
 
   return (
     <div className="flex justify-center mt-20 relative">
       <div className="flex flex-col items-center mx-5">
-        <div className="w-80 my-4">
-          <div className="w-full flex my-3 border border-gray-200 rounded-lg shadow-xl overflow-hidden">
+        <div className="w-96 my-4">
+          <div className="w-full flex my-3 border border-gray-400 rounded-lg overflow-hidden">
             <Input
               className="w-full h-10 px-3 border-none"
               placeholder="Add todo"
+              autoFocus={true}
               value={newTodoText}
               onChange={(e) => setNewTodoText(e.target.value)}
               readOnly={false}
@@ -35,13 +32,14 @@ export default memo(() => {
               className="!text-2xl !px-3.5 !py-0 border-indigo-600"
               onClick={() => {
                 if (!newTodoText.length) return;
-                addTodoMutation(newTodoText);
+                todosMutation("POST", todosUrl, { text: newTodoText });
+                todosQuery.refetch();
                 setNewTodoText("");
               }}
             />
           </div>
 
-          <div className="w-full my-3 border border-gray-200 rounded-lg shadow-xl overflow-hidden">
+          <div className="w-full my-3 border border-gray-400 rounded-lg overflow-hidden">
             <Input
               className="w-full h-10 px-3 border-none"
               placeholder="Search todo"
@@ -61,10 +59,12 @@ export default memo(() => {
                 key={todo.id}
                 todo={todo}
                 onChange={(id, newText) => {
-                  // updateTodoMutation.mutate({ id, newText });
+                  todosMutation("PUT", `${todosUrl}/${id}`, { text: newText });
+                  todosQuery.refetch();
                 }}
                 onRemove={(id) => {
-                  // removeTodoMutation.mutate(id);
+                  todosMutation("DELETE", `${todosUrl}/${id}`);
+                  todosQuery.refetch();
                 }}
               />
             ))}

@@ -5,6 +5,4 @@ import "./index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-// Изменить Tailwind
-
 root.render(<App />);
