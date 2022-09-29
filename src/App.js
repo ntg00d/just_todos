@@ -1,17 +1,24 @@
 import { memo, useState } from "react";
-import { api } from "./api";
 import Likes from "./components/common/Likes";
 import Todo from "./components/common/Todo";
 import Button from "./components/system/Button";
 import Input from "./components/system/Input";
-import { useDataQuery } from "./queries/useDataQuery";
+import { useAddTodoMutation } from "./queries/useAddTodoMutation";
+import { useGetTodosQuery } from "./queries/useGetTodosQuery";
+import { useRemoveTodoMutation } from "./queries/useRemoveTodoMutation";
+import { useUpdateTodoMutation } from "./queries/useUpdateTodoMutation";
 
 export default memo(() => {
   const [newTodoText, setNewTodoText] = useState("");
-  const [searchTodo, setSearchTodo] = useState("");
 
-  const todosUrl = "https://63320557a54a0e83d24ac4e5.mockapi.io/todos";
-  const todosQuery = useDataQuery(todosUrl);
+  const [params, setParams] = useState({
+    search: "",
+  });
+
+  const todos = useGetTodosQuery(params);
+  const addTodo = useAddTodoMutation();
+  const updateTodo = useUpdateTodoMutation();
+  const removeTodo = useRemoveTodoMutation();
 
   return (
     <div className="flex justify-center mt-20 relative">
@@ -29,10 +36,9 @@ export default memo(() => {
             <Button
               title="+"
               className="!text-2xl !px-3.5 !py-0 border-indigo-600"
-              onClick={async () => {
+              onClick={() => {
                 if (!newTodoText.length) return;
-                await api.post(todosUrl, { text: newTodoText });
-                todosQuery.refetch();
+                addTodo.mutate({ text: newTodoText });
                 setNewTodoText("");
               }}
             />
@@ -42,37 +48,38 @@ export default memo(() => {
             <Input
               className="w-full h-10 px-3 border-none"
               placeholder="Search todo"
-              value={searchTodo}
-              onChange={(e) => setSearchTodo(e.target.value)}
+              value={params.search}
+              onChange={(e) => {
+                setParams((prevState) => ({
+                  ...prevState,
+                  search: e.target.value,
+                }));
+              }}
               readOnly={false}
             />
           </div>
         </div>
 
-        {todosQuery.isLoading && <span>Loading...</span>}
+        {todos.isLoading && <span>Loading...</span>}
 
-        {!todosQuery.isLoading && (
+        {!todos.isLoading && (
           <div>
-            {(todosQuery?.data || []).map((todo) => (
+            {(todos?.data || []).map((todo) => (
               <Todo
                 key={todo.id}
                 todo={todo}
-                onChange={async (id, newText) => {
-                  await api.put(`${todosUrl}/${id}`, {
-                    text: newText,
-                  });
-                  todosQuery.refetch();
+                onChange={(id, newText) => {
+                  updateTodo.mutate(id, { text: newText });
                 }}
-                onRemove={async (id) => {
-                  await api.delete(`${todosUrl}/${id}`);
-                  todosQuery.refetch();
+                onRemove={(id) => {
+                  removeTodo.mutate(id);
                 }}
               />
             ))}
           </div>
         )}
 
-        {todosQuery.isError && <p>An error has occurred</p>}
+        {todos.isError && <p>An error has occurred</p>}
       </div>
 
       <Likes />
